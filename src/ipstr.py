@@ -4,16 +4,40 @@ with open("words.txt", "r") as wordfile:
     ipv4_words=wordfile.read().split("\n")
 with open("ipv6.txt", "r") as wordfile:
     ipv6_words=wordfile.read().split("\n")
+
 def __ipv4str(sep: str, inp: list[int]) -> list[str]:
-    return sep.join([ipv4_words[int(n)] for n in inp])
+    """INTERNAL: IPV4 -> STRING"""
+    try:
+        return sep.join([ipv4_words[int(n)] for n in inp])
+    except ValueError:
+        raise IpStrException(f"Invalid IP input - {inp}")
+
+
 def __ipv6str(sep: str, inp: list[int]) -> list[str]:
-    return sep.join([ipv6_words[int(n, 16)] for n in inp])
+    """INTERNAL: IPV6 -> STRING"""
+    try:
+        return sep.join([ipv6_words[int(n, 16)] for n in inp])
+    except ValueError:
+        raise IpStrException(f"Invalid IP input - {inp}")
+
+
 def __str_ipv4(inp: list[str]) -> list[int]:
-    return ".".join([str(ipv4_words.index((val))) for val in inp])
+    """INTERNAL: STRING -> IPV4"""
+    try:
+        return ".".join([str(ipv4_words.index((val))) for val in inp])
+    except ValueError:
+        raise IpStrException(f"Invalid IP input - {inp}")
+
+
 def __str_ipv6(inp: list[str]) -> list[int]:
-    return ":".join([str(hex(ipv6_words.index(val)))[2:].zfill(4) for val in inp])
+    """INTERNAL: STRING -> IPV4"""
+    try:
+        return ":".join([str(hex(ipv6_words.index(val)))[2:].zfill(4) for val in inp])
+    except ValueError:
+        raise IpStrException(f"Invalid IP input - {inp}")
 
 def ip_str(inp: list|str) -> list[str]:
+    """converts `inp`, an IPv4 or IPv6 address, to a string representation"""
     if "[" in str(inp): # list
         if len(inp)==8: # ipv6
             for block in inp:
@@ -49,6 +73,7 @@ def ip_str(inp: list|str) -> list[str]:
             raise IpStrException(f"Invalid IP input - {inp}")
         
 def str_ip(inp: str) -> str:   
+    """converts `inp`, a string representation of an IPv4 or IPv6 address, to said address"""
     splitted=inp.split(".")
     if len(splitted) not in [4,8]: # not decimal seperated
         splitted=inp.split(":")
@@ -61,5 +86,3 @@ def str_ip(inp: str) -> str:
     else:
         raise IpStrException(f"Invalid ipstr input - {inp}")
      
-
-print(str_ip("gas.zero.zero.fuel"))
