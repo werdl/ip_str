@@ -9,7 +9,7 @@ def __ipv4str(sep: str, inp: list[int]) -> list[str]:
     """INTERNAL: IPV4 -> STRING"""
     try:
         return sep.join([ipv4_words[int(n)] for n in inp])
-    except ValueError:
+    except ValueError as e:
         raise IpStrException(f"Invalid IP input - {inp}")
 
 

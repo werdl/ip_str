@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, request, redirect
 import json
 import ipstr
+import socket
 
 app=Flask("ip_str")
 
@@ -9,6 +10,10 @@ def gen(ip):
     try:
         return json.dumps(ipstr.ip_str(ip))
     except:
+        try:
+            return json.dumps(ipstr.ip_str(socket.gethostbyname(ip)))
+        except:
+            pass
         return json.dumps({
             "code": 400,
             "content": "bad input"
@@ -27,3 +32,11 @@ def ip(strd):
             "content": "bad input"
         })
     
+@app.route("/me")
+def me():
+    return gen(str(request.environ.get('HTTP_X_REAL_IP', request.remote_addr)))
+
+@app.route("/redirect/<strd>")
+@app.route("/redirect/<strd>/<path>")
+def redirectt(strd, path=""):
+    return redirect("http://"+json.loads(ip(strd))+"/"+path)
